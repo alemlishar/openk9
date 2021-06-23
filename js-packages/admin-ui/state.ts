@@ -75,8 +75,8 @@ export function useLoginCheck({ isLoginPage } = { isLoginPage: false }) {
   const invalidateLogin = useStore((s) => s.invalidateLogin);
 
   const currentTimeSec = new Date().getTime() / 1000;
-  const loginValid = loginInfo && userInfo && currentTimeSec < userInfo.exp;
-
+  //const loginValid = loginInfo && userInfo && currentTimeSec < userInfo.exp;
+  const loginValid = true;
   const redirect =
     (router.query.redirect && firstOrString(router.query.redirect)) || "/";
 
