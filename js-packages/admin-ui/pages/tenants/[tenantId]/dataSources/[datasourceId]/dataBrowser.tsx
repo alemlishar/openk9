@@ -20,6 +20,8 @@ import { createUseStyles } from "react-jss";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { format } from "date-fns";
+import ClayForm, { ClayInput } from "@clayui/form";
+import ClayList from "@clayui/list";
 
 import { firstOrString, ThemeType } from "@openk9/search-ui-components";
 import {
@@ -32,6 +34,12 @@ import { DataSourceNavBar } from "../../../../../components/DataSourceNavBar";
 import { Layout } from "../../../../../components/Layout";
 import { useLoginCheck, useLoginInfo } from "../../../../../state";
 
+const mystyle = {
+  Color: "black",
+  padding: "1px",
+  innerWidth: "112px",
+  innerHeight: "47px",
+};
 const useStyles = createUseStyles((theme: ThemeType) => ({
   root: {
     margin: [theme.spacingUnit * 2, "auto"],
@@ -94,15 +102,17 @@ function Inner({
     () => getDataSourceInfo(datasourceId, loginInfo),
   );
 
-  const { data: searchResults } = useSWR(`/api/v1/search`, () =>
+  console.log("getted result of Datasource :" + datasource?.jsonConfig);
+  const { data: searchResults } = useSWR(``, () =>
     doSearch(
       {
-        searchQuery: [{ tokenType: "DATASOURCE", values: [] }],
+        searchQuery: [{ tokenType: "TEXT", values: ["regione.toscana.it"] }],
         range: [0, 20],
       },
       loginInfo,
     ),
   );
+  console.log("getted result Datasource Search:" + datasource);
 
   if (!datasource) {
     return <span className="loading-animation" />;
@@ -164,7 +174,58 @@ function DSDataBrowser() {
       >
         <div className={classes.root}>
           <Inner tenantId={parseInt(tenantId)} datasourceId={dataSourceInt} />
+          {
+            <ClayForm.Group>
+              <label htmlFor="basicInputText">Search Input</label>
+              <ClayInput
+                id="basicInputText"
+                placeholder="Insert your keyword"
+                type="text"
+              />
+            </ClayForm.Group>
+          }
+          {
+            <ClayList>
+              <ClayList.Header>
+                <span>
+                  {" "}
+                  List Of Indexed
+                  Document&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Total N0:
+                  &nbsp;&nbsp; 12000{" "}
+                </span>
+              </ClayList.Header>
+
+              <ClayList.Item flex>
+                <ClayList.ItemField> Document 1</ClayList.ItemField>
+              </ClayList.Item>
+
+              <ClayList.Item flex>
+                <div style={mystyle}>
+                  {true == true ? (
+                    <span style={mystyle}>
+                      {" "}
+                      <h1>Json Data</h1>{" "} 
+                    </span>
+                  ) : null}
+                </div>
+              </ClayList.Item>
+            </ClayList>
+          }
         </div>
+        <div></div>
       </Layout>
     </>
   );

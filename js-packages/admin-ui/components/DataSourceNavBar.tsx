@@ -104,7 +104,10 @@ export function DataSourceNavBar({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <>
+    <
+      
+    >
+   
       <ClayNavigationBar
         triggerLabel="Configuration"
         className={classes.navMenu}
@@ -124,7 +127,7 @@ export function DataSourceNavBar({
             </a>
           </Link>
         </ClayNavigationBar.Item>
-        {/* <ClayNavigationBar.Item>
+        <ClayNavigationBar.Item>
           <Link
             href={`/tenants/${tenantId}/dataSources/${datasourceId}/dataBrowser`}
             passHref
@@ -138,7 +141,7 @@ export function DataSourceNavBar({
               Data Browser
             </a>
           </Link>
-        </ClayNavigationBar.Item> */}
+        </ClayNavigationBar.Item>
         <ClayNavigationBar.Item>
           <Link
             href={`/tenants/${tenantId}/dataSources/${datasourceId}/enrich`}
