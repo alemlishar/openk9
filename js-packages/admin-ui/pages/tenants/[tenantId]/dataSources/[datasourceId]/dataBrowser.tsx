@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -26,6 +26,7 @@ import ClayList from "@clayui/list";
 import { firstOrString, ThemeType } from "@openk9/search-ui-components";
 import {
   doSearch,
+  doSearchDatasource,
   GenericResultItem,
   getDataSourceInfo,
 } from "@openk9/http-api";
@@ -33,13 +34,31 @@ import {
 import { DataSourceNavBar } from "../../../../../components/DataSourceNavBar";
 import { Layout } from "../../../../../components/Layout";
 import { useLoginCheck, useLoginInfo } from "../../../../../state";
-
+const dataListNew = [
+  {
+    name: "a1",
+    description: "aniya99@gmail.com",
+  },
+  {
+    name: "a2",
+    description: "aniya99@gmail.com",
+  },
+  {
+    name: "a3",
+    description: "aniya99@gmail.com",
+  },
+  {
+    name: "a4",
+    description: "aniya99@gmail.com",
+  },
+];
 const mystyle = {
-  Color: "black",
-  padding: "1px",
-  innerWidth: "112px",
-  innerHeight: "47px",
+  Color: "black !important",
+  padding: "1px  !important",
+  Width: "112px  !important",
+  Height: "47px  !important",
 };
+
 const useStyles = createUseStyles((theme: ThemeType) => ({
   root: {
     margin: [theme.spacingUnit * 2, "auto"],
@@ -97,24 +116,25 @@ function Inner({
 
   const loginInfo = useLoginInfo();
 
-  const { data: datasource } = useSWR(
-    `/api/v2/datasource/${datasourceId}`,
-    () => getDataSourceInfo(datasourceId, loginInfo),
+  const { data: finalData } = useSWR(`/api/v2/datasource/${datasourceId}`, () =>
+    getDataSourceInfo(datasourceId, loginInfo),
   );
+  //finalData === datasource;
 
-  console.log("getted result of Datasource :" + datasource?.jsonConfig);
+  console.log("getted result of Datasource finalData:" + finalData?.jsonConfig);
+
   const { data: searchResults } = useSWR(``, () =>
-    doSearch(
+    doSearchDatasource(
       {
         searchQuery: [{ tokenType: "TEXT", values: ["regione.toscana.it"] }],
         range: [0, 20],
       },
+      datasourceId,
       loginInfo,
     ),
   );
-  console.log("getted result Datasource Search:" + datasource);
 
-  if (!datasource) {
+  if (!searchResults) {
     return <span className="loading-animation" />;
   }
 
@@ -137,8 +157,39 @@ function Inner({
   );
 }
 
+function Draw({ list, record, setRecord }) {
+  function toggle({ name, description }) {
+    let temp = record.name;
+    if (temp === name) {
+      setRecord({ name: "", description: "" });
+    } else {
+      temp == name;
+      setRecord({ name, description });
+    }
+
+    console.log(record.name + description);
+  }
+
+  return (
+    <div>
+      <ClayList.Item flex value={list} onClick={() => toggle(list)}>
+        <ClayList.ItemField> {list.name} </ClayList.ItemField>
+      </ClayList.Item>
+      {list.name == record.name && (
+        <div>
+          <span>{list.description}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DSDataBrowser() {
   const classes = useStyles();
+  const [dataList, setDatalist] = useState(dataListNew);
+  const [record, setRecord] = useState({ name: "", description: "" });
+
+  const [showDescriptionIdentifier, setshowSelectedIdentifier] = useState(null);
 
   const { query } = useRouter();
   const tenantId = query.tenantId && firstOrString(query.tenantId);
@@ -187,41 +238,17 @@ function DSDataBrowser() {
           {
             <ClayList>
               <ClayList.Header>
-                <span>
-                  {" "}
-                  List Of Indexed
-                  Document&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Total N0:
-                  &nbsp;&nbsp; 12000{" "}
-                </span>
+                <span> List Of Indexed Document Total N0: 12000 </span>
               </ClayList.Header>
 
-              <ClayList.Item flex>
-                <ClayList.ItemField> Document 1</ClayList.ItemField>
-              </ClayList.Item>
-
-              <ClayList.Item flex>
-                <div style={mystyle}>
-                  {true == true ? (
-                    <span style={mystyle}>
-                      {" "}
-                      <h1>Json Data</h1>{" "} 
-                    </span>
-                  ) : null}
-                </div>
-              </ClayList.Item>
+              {dataList.map((list, index) => (
+                <Draw
+                  key={index}
+                  list={list}
+                  record={record}
+                  setRecord={setRecord}
+                />
+              ))}
             </ClayList>
           }
         </div>
