@@ -60,9 +60,6 @@ const mystyle = {
   Height: "47px  !important",
 };
 
-
-
-
 const useStyles = createUseStyles((theme: ThemeType) => ({
   root: {
     margin: [theme.spacingUnit * 2, "auto"],
@@ -180,15 +177,13 @@ function Draw({ list, record, setRecord }) {
         <ClayList.ItemField> {list.name} </ClayList.ItemField>
       </ClayList.Item>
       {list.name == record.name && (
-        <div  style = {{height: "300px", border: "2px solid gray"}}>
-          <ClayInput 
-
-                id={list.name}
-                placeholder="JSON"
-                type="text"
-                disabled= {true}>
-              
-          </ClayInput>
+        <div style={{ height: "300px", border: "2px solid gray" }}>
+          <ClayInput
+            id={list.name}
+            placeholder="JSON"
+            type="text"
+            disabled={true}
+          ></ClayInput>
           <span>{list.description}</span>
         </div>
       )}
