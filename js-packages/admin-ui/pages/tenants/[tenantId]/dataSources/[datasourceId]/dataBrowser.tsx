@@ -34,6 +34,7 @@ import {
 import { DataSourceNavBar } from "../../../../../components/DataSourceNavBar";
 import { Layout } from "../../../../../components/Layout";
 import { useLoginCheck, useLoginInfo } from "../../../../../state";
+import { red } from "ansicolor";
 const dataListNew = [
   {
     name: "a1",
@@ -58,6 +59,9 @@ const mystyle = {
   Width: "112px  !important",
   Height: "47px  !important",
 };
+
+
+
 
 const useStyles = createUseStyles((theme: ThemeType) => ({
   root: {
@@ -126,7 +130,7 @@ function Inner({
   const { data: searchResults } = useSWR(``, () =>
     doSearchDatasource(
       {
-        searchQuery: [{ tokenType: "TEXT", values: ["regione.toscana.it"] }],
+        searchQuery: [{ tokenType: "TEXT", values: [""] }],
         range: [0, 20],
       },
       datasourceId,
@@ -176,7 +180,15 @@ function Draw({ list, record, setRecord }) {
         <ClayList.ItemField> {list.name} </ClayList.ItemField>
       </ClayList.Item>
       {list.name == record.name && (
-        <div>
+        <div  style = {{height: "300px", border: "2px solid gray"}}>
+          <ClayInput 
+
+                id={list.name}
+                placeholder="JSON"
+                type="text"
+                disabled= {true}>
+              
+          </ClayInput>
           <span>{list.description}</span>
         </div>
       )}
